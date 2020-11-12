@@ -53,7 +53,7 @@ std::pair<cv::Mat,cv::Mat> getImage() {
     Mat depth;
     while (1){
         if (color_data.poll_for_frame(&color_frame)){
-            cout << "got frame" << endl;
+            cout << "got color frame" << endl;
             color = Mat(Size(640, 480), CV_8UC3, (void*)color_frame.get_data(), Mat::AUTO_STEP);
             break;
         }
@@ -61,8 +61,9 @@ std::pair<cv::Mat,cv::Mat> getImage() {
 
     while (1){
         if (depth_data.poll_for_frame(&depth_frame)){
-            cout << "got frame" << endl;
-            depth = Mat(Size(640, 480), CV_8UC3, (void*)depth_frame.get_data(), Mat::AUTO_STEP);
+            cout << "got depth frame" << endl;
+            depth = Mat(Size(640, 480), CV_16UC1, (void*)depth_frame.get_data(), Mat::AUTO_STEP);
+            depth.convertTo(depth, CV_8UC1, 15 / 256.0);
             break;
         }
     }

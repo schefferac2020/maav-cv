@@ -23,7 +23,8 @@ void CameraDriver();
 void Benchmarking();
 
 int main(int argc, char** argv){
-    driver(); //Starts the camera driver
+    //Start the camera driver
+    driver();
     
     //Main Thread
     Benchmarking();
@@ -33,44 +34,34 @@ void CameraDriver() {
     while (!stopped){
         rs2::frameset data = pipe.wait_for_frames();
         rs2::frame color_frame = data.get_color_frame();
-        rs2::frame depth_frame = data.get_depth_frame();
+        rs2::depth_frame depth_fr = data.get_depth_frame();
         
 
         color_data.enqueue(color_frame);
-        depth_data.enqueue(depth_frame);     
+        depth_data.enqueue(depth_fr);     
     }
 }
 
 void Benchmarking() {
     std::pair<Mat, Mat> frame_pair;
+    rs2::frame color_frame;
+    rs2::frame depth_frame;
     while (!stopped){ //pulls from queue and does processing
-        rs2::frame color_frame;
-        rs2::frame depth_frame;
-
-
+        
         frame_pair = getImage();
         Mat color = std::get<0>(frame_pair);
         Mat depth = std::get<1>(frame_pair);
         show_image(color, depth);
         
-
-        /*
-        if (color_data.poll_for_frame(&color_frame)){
-            cout << "got frame" << endl;
-            Mat color(Size(640, 480), CV_8UC3, (void*)color_frame.get_data(), Mat::AUTO_STEP);
-            namedWindow("Display Image", WINDOW_AUTOSIZE);
-            imshow("Display Image", color);
-            waitKey(1);
-        }
-        */
     }
 }
 
 
 void show_image(Mat color, Mat depth){
-    //namedWindow("Display Image", WINDOW_AUTOSIZE);
-    imshow("Display Image", color);
-    //imshow("Display Image", depth);
+
+    imshow("Color Image", color);
+    moveWindow("Color Image", 200,200);
+    imshow("Depth Image", depth);
     waitKey(1);
     
     destroyAllWindows();
