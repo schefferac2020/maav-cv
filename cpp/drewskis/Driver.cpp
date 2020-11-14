@@ -11,8 +11,20 @@ int main(int argc, char** argv){
     //Start the camera driver
     driver();
     
-    //Main Thread
+    //Main Benchmarking Thread
     Benchmarking();
+}
+
+void driver(){
+    cfg.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_BGR8, 30);
+    cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30);
+    pipe.start(cfg);
+
+    //Camera Driver Thread
+    std::thread camera_driver([&]() { //Gets frames pushes to queue
+        CameraDriver();
+    });
+    camera_driver.detach();
 }
 
 void CameraDriver() {
@@ -42,6 +54,8 @@ void Benchmarking() {
 }
 
 
+
+
 void show_image(Mat color, Mat depth){
 
     imshow("Color Image", color);
@@ -52,17 +66,6 @@ void show_image(Mat color, Mat depth){
     destroyAllWindows();
 }
 
-void driver(){
-    cfg.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_BGR8, 30);
-    cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480, RS2_FORMAT_Z16, 30);
-    pipe.start(cfg);
-
-    //Camera Driver Thread
-    std::thread camera_driver([&]() { //Gets frames pushes to queue
-        CameraDriver();
-    });
-    camera_driver.detach();
-}
 
 std::pair<cv::Mat,cv::Mat> getImage() {
     rs2::frame color_frame;

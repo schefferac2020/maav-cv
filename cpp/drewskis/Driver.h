@@ -5,10 +5,6 @@
 #include <vector>
 #include <chrono>
 
-#include <math.h>
-#include <queue>
-#include <unordered_set>
-#include <map>
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -36,9 +32,6 @@ void Benchmarking();
 
 //Starts the camera Driver
 void driver();
-
-
-
 
 //Pops an image from the queue
 //Returns an std::pair of the Color and Depth frames as cv::Mat types
